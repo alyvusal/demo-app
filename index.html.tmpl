@@ -7,33 +7,41 @@
   <style>
     * { box-sizing: border-box; font-family: Arial, sans-serif; }
     body { background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-    h1 { color: #333; margin-bottom: 10px; }
-    .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    .btn:hover { background-color: #0056b3; }
-    .content { padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); width: 400px; text-align: center; }
+    h1 { color: #6a0dad; margin-bottom: 10px; }
+    .content { padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); width: 400px; text-align: center; border: 2px solid #6a0dad; }
+    .content h2 { color: #ff69b4; }
+    .content p { color: #333; font-weight: bold; }
   </style>
 </head>
 <body>
   <h1>Pod Info App $VERSION</h1>
-  <button class="btn" onclick="showPodInfo()">Show Pod Info</button>
-  <div id="content" class="content">Click the button to see pod information.</div>
+  <div id="content" class="content">Loading pod information...</div>
 
   <script>
     async function showPodInfo() {
       const content = document.getElementById('content');
       try {
         const response = await fetch('/info');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
+        const headers = data.headers || {};
         content.innerHTML = `
-          <h2>Pod Information</h2>
-          <p><strong>Pod Name:</strong> ${data.podName}</p>
-          <p><strong>Pod IP:</strong> ${data.podIP}</p>
-          <p><strong>X-Forwarded-For:</strong> ${data.xForwardedFor}</p>
+          <p><strong>Pod Name:</strong> ${data.podName || 'N/A'}</p>
+          <p><strong>Pod IP:</strong> ${data.podIP || 'N/A'}</p>
+          <p><strong>X-Forwarded-For:</strong> ${data.xForwardedFor || 'N/A'}</p>
+          <p><strong>User-Agent:</strong> ${headers['User-Agent'] || 'N/A'}</p>
+          <p><strong>Accept:</strong> ${headers['Accept'] || 'N/A'}</p>
+          <p><strong>Host:</strong> ${headers['Host'] || 'N/A'}</p>
         `;
       } catch (error) {
-        content.innerHTML = '<h2>Error loading pod information.</h2>';
+        console.error('Error fetching pod info:', error);
+        content.innerHTML = `<h2>Error loading pod information.</h2><p>${error.message}</p>`;
       }
     }
+
+    window.onload = showPodInfo;
   </script>
 </body>
 </html>
