@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pod Info App $VERSION</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    h1 { color: #333; margin-bottom: 10px; }
+    .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .btn:hover { background-color: #0056b3; }
+    .content { padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); width: 400px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>Pod Info App $VERSION</h1>
+  <button class="btn" onclick="showPodInfo()">Show Pod Info</button>
+  <div id="content" class="content">Click the button to see pod information.</div>
+
+  <script>
+    async function showPodInfo() {
+      const content = document.getElementById('content');
+      try {
+        const response = await fetch('/info');
+        const data = await response.json();
+        content.innerHTML = `
+          <h2>Pod Information</h2>
+          <p><strong>Pod Name:</strong> ${data.podName}</p>
+          <p><strong>Pod IP:</strong> ${data.podIP}</p>
+          <p><strong>X-Forwarded-For:</strong> ${data.xForwardedFor}</p>
+        `;
+      } catch (error) {
+        content.innerHTML = '<h2>Error loading pod information.</h2>';
+      }
+    }
+  </script>
+</body>
+</html>
